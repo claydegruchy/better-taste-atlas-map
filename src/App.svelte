@@ -10,7 +10,6 @@
 
   onMount(async () => {
     allItems.set(data);
-    $selectedItem = $allItems[0];
   });
 </script>
 
