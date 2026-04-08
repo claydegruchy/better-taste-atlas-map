@@ -1,0 +1,6 @@
+{
+  "appId": "com.better-taste-atlas-map.app",
+  "appName": "better-taste-atlas-map",
+  "webDir": "dist",
+  "plugins": {}
+}
