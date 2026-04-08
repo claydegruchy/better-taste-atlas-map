@@ -146,7 +146,10 @@
     if (map) map.setTarget(null);
   });
 
-  $: if (vectorSource) renderFeatures($filteredItems);
+  $: if (vectorSource) {
+    renderFeatures($filteredItems);
+    updateDotSizes(map.getView().getZoom());
+  }
   $: updateActiveFeature($selectedItem);
 </script>
 
