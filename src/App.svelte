@@ -1,27 +1,27 @@
 <script>
   import { onMount } from "svelte";
-  import { allItems } from "./stores.js";
+  import { allItems, selectedItem } from "./stores.js";
   import Map from "./Map.svelte";
   import Search from "./Search.svelte";
-  import Sidebar from "./Sidebar.svelte";
+  import Drawer from "./Drawer.svelte";
   import About from "./About.svelte";
 
   import data from "../public/data.json";
 
   onMount(async () => {
     allItems.set(data);
+    $selectedItem = $allItems[0];
   });
 </script>
 
 <div class="shell">
-  <header class="topbar">
+  <header class="overlay">
     <Search />
     <About />
   </header>
-
-  <div class="map-area">
+  <div class="content">
     <Map />
-    <Sidebar />
+    <Drawer />
   </div>
 </div>
 
@@ -34,7 +34,7 @@
     overflow: hidden;
   }
 
-  .topbar {
+  .overlay {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -42,15 +42,10 @@
     height: 44px;
     background: #fff;
     border-bottom: 1px solid #ddd;
-    z-index: 1000;
     flex-shrink: 0;
   }
 
-  .drawer {
-    
-  }
-
-  .map-area {
+  .content {
     flex: 1 1 auto;
     position: relative;
     min-height: 0;

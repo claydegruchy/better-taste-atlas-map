@@ -14,14 +14,22 @@ import { XYZ } from "ol/source";
 import GeoJSON from "ol/format/GeoJSON";
 
 import countries from "../public/countries.json"
+import { LineString } from "ol/geom";
+
+const vectorSource = new VectorSource({
+	useSpatialIndex: true,
+});
+const lineSource = new VectorSource();  // add this
 
 export function createMap(container) {
-	const vectorSource = new VectorSource();
+
 
 	const vectorLayer = new VectorLayer({
 		source: vectorSource,
 		style: defaultStyle(),
 	});
+
+
 
 	const webGlLayer = new WebGLVectorLayer({
 		source: vectorSource,
@@ -40,6 +48,13 @@ export function createMap(container) {
 		layers: [
 			new TileLayer({ source: new OSM() }),
 
+			new VectorLayer({          // add this layer
+				source: lineSource,
+				style: new Style({
+					stroke: new Stroke({ color: "#e63946", width: 2 }),
+				}),
+			}),
+
 			// new VectorLayer({
 			// 	source: new VectorSource({
 			// 		url: "countries.json",
@@ -55,12 +70,24 @@ export function createMap(container) {
 			vectorLayer,
 		],
 		view: new View({
-			center: fromLonLat([0, 20]),
-			zoom: 3,
+			center: fromLonLat([7.78758125782123, 48.87341639432371]),
+			zoom: 4,
+			enableRotation: false,
 		}),
 	});
 
 	return { map, vectorSource, vectorLayer };
+}
+
+export function drawLine(coordA = null, coordB = null) {
+	lineSource.clear();
+	if (!coordA || !coordB) return
+	lineSource.addFeature(new Feature({
+		geometry: new LineString([
+			fromLonLat(coordA),
+			fromLonLat(coordB),
+		]),
+	}));
 }
 
 export function defaultStyle() {
