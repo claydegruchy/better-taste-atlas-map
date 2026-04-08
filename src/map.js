@@ -26,7 +26,7 @@ export function createMap(container) {
 
 	const vectorLayer = new VectorLayer({
 		source: vectorSource,
-		style: defaultStyle(),
+		// style: defaultStyle(),
 	});
 
 
@@ -106,7 +106,8 @@ export function activeStyle() {
 			radius: 9,
 			fill: new Fill({ color: "#f4a261" }),
 			stroke: new Stroke({ color: "#fff", width: 2 }),
-		}),
+		}), zIndex: 999,
+
 	});
 }
 
@@ -118,3 +119,23 @@ export function makeFeature(item) {
 	feature.setId(item.FId);
 	return feature;
 }
+
+
+
+
+export function updateDotSizes(zoom, activeId = null) {
+	const radius = Math.max(3, Math.min(6, zoom - 1));
+	vectorSource.getFeatures().forEach((f) => {
+		if (f.getId() === activeId) return;
+
+		f.setStyle(new Style({
+			image: new Circle({
+				radius,
+				fill: new Fill({ color: "#e63946" }),
+				stroke: new Stroke({ color: "#fff", width: 2 }),
+			}),
+		}));
+	});
+}
+
+

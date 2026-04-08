@@ -18,7 +18,7 @@
 
 <style>
   dialog {
-    z-index: -2;
+    z-index: 100;
     max-width: 90vw;
     max-height: 70vh;
   }

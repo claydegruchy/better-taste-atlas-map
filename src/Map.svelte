@@ -6,11 +6,13 @@
     activeStyle,
     makeFeature,
     drawLine,
+    updateDotSizes,
   } from "./map.js";
   import {
     filteredItems,
     hoveredItem,
     itemDistances,
+    searchQuery,
     selectedItem,
     visibleItems,
   } from "./stores.js";
@@ -20,18 +22,6 @@
   let map;
   let vectorSource;
   let vectorLayer;
-
-  hoveredItem.subscribe((hovered) => {
-    if (!map) return;
-
-    if (!hovered) return drawLine();
-    drawLine(toLonLat(map.getView().getCenter()), [
-      hovered.Location.Longitude,
-      hovered.Location.Latitude,
-    ]);
-
-    // drawLine([0, 0], [10, 10]);
-  });
 
   function renderFeatures(items) {
     if (!vectorSource) return;
@@ -56,12 +46,15 @@
 
   function updateActiveFeature(active) {
     if (!vectorSource) return;
-    for (const f of vectorSource.getFeatures()) {
-      f.setStyle(
-        active && f.getId() === active.FId ? activeStyle() : defaultStyle(),
-      );
-    }
+
+    const zoom = map.getView().getZoom();
+    updateDotSizes(zoom, active?.FId);
+
+    console.log(active);
+
     if (active) {
+      const feature = vectorSource.getFeatureById(active.FId);
+      if (feature) feature.setStyle(activeStyle());
       map.getView().animate({
         center: fromLonLat([
           active.Location.Longitude,
@@ -119,14 +112,35 @@
     });
 
     map.on("moveend", () => {
-      let [items, distances] = featuresInView();
+      updateVisible();
+      updateDotSizes(map.getView().getZoom(), $selectedItem?.FId);
+    });
+    updateDotSizes(map.getView().getZoom());
+    renderFeatures($filteredItems);
 
-      $visibleItems = items;
-      $itemDistances = distances;
+    hoveredItem.subscribe((hovered) => {
+      if (!map) return;
+
+      if (!hovered) {
+        return drawLine();
+      }
+      drawLine(toLonLat(map.getView().getCenter()), [
+        hovered.Location.Longitude,
+        hovered.Location.Latitude,
+      ]);
     });
 
-    renderFeatures($filteredItems);
+    searchQuery.subscribe(() => {
+      updateVisible();
+    });
   });
+
+  function updateVisible() {
+    let [items, distances] = featuresInView();
+
+    $visibleItems = items;
+    $itemDistances = distances;
+  }
 
   onDestroy(() => {
     if (map) map.setTarget(null);
